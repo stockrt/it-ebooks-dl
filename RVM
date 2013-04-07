@@ -1,0 +1,55 @@
+##############
+## Ruby Env ##
+##############
+
+# Install homebrew (Mac)
+
+    ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
+    brew update
+    brew tap homebrew/dupes
+
+# Install gcc and other deps (Mac)
+
+    brew install autoconf automake apple-gcc42
+    brew install libksba
+    brew install tcl tk
+
+# Install openssl (Ubuntu)
+
+    apt-get install libssl-dev
+
+# Install RVM:
+
+    curl -k -L https://get.rvm.io | bash -s stable --ruby
+    rvm reload
+    # or open a new shell window/tab
+
+# Install Ruby:
+
+    rvm package install openssl
+
+    for rubyversion in ruby-1.8.7-p370 ruby-1.9.2-p320 ruby-1.9.3
+    do
+        rvm install $rubyversion
+    done
+
+# Use Ruby:
+
+    source .rvmrc
+    # or enter this directory again to automatically load .rvmrc file
+    cd /tmp
+    cd -
+
+# Check current Ruby and Gemset:
+
+    rvm current
+
+# Install gems:
+
+    gem list
+    bundle
+    gem list
+
+# Run tests:
+
+    rake
