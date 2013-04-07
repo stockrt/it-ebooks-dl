@@ -1,0 +1,23 @@
+h2. it-ebooks-dl
+
+POC downloader script for "it-ebooks":http://it-ebooks.info site.
+
+h2. Using
+
+<pre>
+<code>
+    # clone
+    git clone git://github.com/stockrt/it-ebooks-dl
+    cd it-ebooks-dl
+
+    # run
+    ./it-ebooks-dl
+    or
+    ./it-ebooks-dl-selenium
+</code>
+</pre>
+
+h2. RVM
+
+See "RVM":https://github.com/stockrt/it-ebooks-dl/blob/master/RVM for install
+instructions.
