@@ -19,5 +19,4 @@ h2. Using
 
 h2. RVM
 
-See "RVM":https://github.com/stockrt/it-ebooks-dl/blob/master/RVM for install
-instructions.
+See "RVM":https://github.com/stockrt/it-ebooks-dl/blob/master/RVM for install instructions.
