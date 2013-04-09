@@ -14,6 +14,8 @@ abort "#{$0} <initial_book_id> <max_downloads> <download_dir>" if ARGV.size != 3
 initial_book_id = ARGV[0].to_i
 max_downloads = ARGV[1].to_i
 download_dir = File.expand_path(ARGV[2])
+$domain = 'www.it-ebooks.info'
+$ua = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:19.0) Gecko/20100101 Firefox/19.0'
 
 # Check.
 abort "Download dir not found: #{download_dir}" unless File.directory?(download_dir)
@@ -24,10 +26,10 @@ def process_book(id, download_counter, max_downloads, download_dir)
 
   # Agent.
   a = Mechanize.new do |agent|
-    agent.user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:19.0) Gecko/20100101 Firefox/19.0'
+    agent.user_agent = $ua
   end
 
-  a.get("http://www.it-ebooks.info/book/#{id}/") do |page|
+  a.get("http://#{$domain}/book/#{id}/") do |page|
     author = page.parser.xpath('//td/b[@itemprop="author"]').children.to_s
     title = page.parser.xpath('//h1').children.to_s
     publisher = page.parser.xpath('//td/b/a[@itemprop="publisher"]').children.to_s
@@ -53,7 +55,7 @@ def process_book(id, download_counter, max_downloads, download_dir)
       puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
       #a.click(download_link).save_as(filename_path)
       counter = 0
-      Net::HTTP.start('www.it-ebooks.info') do |http|
+      Net::HTTP.start($domain, {'User-Agent' => $ua}) do |http|
         response = http.request_head(URI.escape(download_link.href))
         pbar = ProgressBar.create(:total => response['content-length'].to_i, :format => '%a %B %p%% %c/%C %e')
         File.open("#{filename_path}.part", 'w') do |f|
