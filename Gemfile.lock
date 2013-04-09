@@ -21,6 +21,7 @@ GEM
     net-http-persistent (2.8)
     nokogiri (1.5.9)
     ntlm-http (0.1.1)
+    ruby-progressbar (1.0.2)
     rubyzip (0.9.9)
     selenium-webdriver (2.31.0)
       childprocess (>= 0.2.5)
@@ -39,4 +40,5 @@ PLATFORMS
 DEPENDENCIES
   colorize
   mechanize
+  ruby-progressbar
   selenium-webdriver

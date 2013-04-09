@@ -4,6 +4,7 @@
 # Requires.
 require 'mechanize'
 require 'colorize'
+require 'ruby-progressbar'
 
 # Usage.
 abort "#{$0} <initial_book_id> <max_downloads> <download_dir>" if ARGV.size != 3
@@ -42,11 +43,27 @@ def process_book(id, download_num, download_dir)
     filename.chomp!
 
     filename_path = "#{download_dir}/#{filename}"
+
+    download_link = page.link_with(:id => 'dl')
+
     if File.exist?(filename_path)
       puts "- Already downloaded (#{id} / #{size}): #{filename}".light_yellow
     else
       puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
-      a.click(page.link_with(:id => 'dl')).save_as(filename_path)
+      #a.click(download_link).save_as(filename_path)
+      counter = 0
+      Net::HTTP.start('www.it-ebooks.info') do |http|
+        response = http.request_head(URI.escape(download_link.href))
+        pbar = ProgressBar.create(:total => response['content-length'].to_i, :format => '%a %B %p%% %c/%C %e')
+        File.open("#{filename_path}.part", 'w') do |f|
+          http.get(URI.escape(download_link.href)) do |str|
+            f.write str
+            counter += str.length
+            pbar.progress = counter
+          end
+        end
+        File.rename("#{filename_path}.part", filename_path)
+      end
     end
   end
 end
