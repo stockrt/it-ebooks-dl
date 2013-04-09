@@ -1,6 +1,6 @@
 source :rubygems
 
-gem 'selenium-webdriver'
-gem 'mechanize'
 gem 'colorize'
+gem 'mechanize'
 gem 'ruby-progressbar'
+gem 'selenium-webdriver'

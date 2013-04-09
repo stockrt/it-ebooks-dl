@@ -2,8 +2,9 @@
 # coding: utf-8
 
 # Requires.
-require 'mechanize'
 require 'colorize'
+require 'net/http'
+require 'mechanize'
 require 'ruby-progressbar'
 
 # Usage.
