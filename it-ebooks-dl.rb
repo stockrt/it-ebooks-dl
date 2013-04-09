@@ -18,8 +18,8 @@ download_dir = File.expand_path(ARGV[2])
 abort "Download dir not found: #{download_dir}" unless File.directory?(download_dir)
 
 # Parse and download.
-def process_book(id, download_num, download_dir)
-  puts "* (#{download_num}) Processing book_id: #{id}".light_blue
+def process_book(id, download_counter, max_downloads, download_dir)
+  puts "* (#{download_counter}/#{max_downloads}) Processing book_id: #{id}".light_blue
 
   # Agent.
   a = Mechanize.new do |agent|
@@ -71,7 +71,7 @@ end
 # Loop.
 download_counter = 1
 while download_counter <= max_downloads do
-  process_book(initial_book_id, download_counter, download_dir)
+  process_book(initial_book_id, download_counter, max_downloads, download_dir)
   initial_book_id += 1
   download_counter += 1
 end

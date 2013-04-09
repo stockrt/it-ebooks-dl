@@ -38,8 +38,8 @@ else
 end
 
 # Parse and download.
-def process_book(id, download_num)
-  puts "* (#{download_num}) Processing book_id: #{id}".light_blue
+def process_book(id, download_counter, max_downloads)
+  puts "* (#{download_counter}/#{max_downloads}) Processing book_id: #{id}".light_blue
 
   $driver.navigate.to("http://www.it-ebooks.info/book/#{id}/")
   element = $driver.find_element(:id, 'dl')
@@ -49,7 +49,7 @@ end
 # Loop.
 download_counter = 1
 while download_counter <= max_downloads do
-  process_book(initial_book_id, download_counter)
+  process_book(initial_book_id, download_counter, max_downloads)
   initial_book_id += 1
   download_counter += 1
 end
