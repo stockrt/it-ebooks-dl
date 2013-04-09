@@ -59,10 +59,10 @@ def process_book(id, download_counter, max_downloads, download_dir)
       Net::HTTP.start($domain, {'User-Agent' => $ua}) do |http|
         response = http.request_head(URI.escape(download_link.href))
         pbar = ProgressBar.create(:total => response['content-length'].to_i, :format => '%a %B %p%% %c/%C %e')
-        File.open("#{filename_path}.part", 'w') do |f|
-          http.get(URI.escape(download_link.href)) do |str|
-            f.write str
-            counter += str.length
+        File.open("#{filename_path}.part", 'w') do |file|
+          http.get(URI.escape(download_link.href)) do |stream|
+            file.write stream
+            counter += stream.length
             pbar.progress = counter
           end
         end
