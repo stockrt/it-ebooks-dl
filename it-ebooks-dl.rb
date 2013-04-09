@@ -42,6 +42,7 @@ def process_book(id, download_counter, max_downloads, download_dir)
 
     filename = "#{author} - #{title} - #{publisher} - #{date} - #{pages}p - #{lang} - ISBN #{isbn}.#{format}"
     filename.gsub!(' ', '_')
+    filename.delete!(',')
     filename.delete!('\'')
     filename.chomp!
 
