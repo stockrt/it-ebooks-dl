@@ -56,11 +56,11 @@ def process_book(id, download_counter, max_downloads, download_dir)
       puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
       #a.click(download_link).save_as(filename_path)
       counter = 0
-      Net::HTTP.start($domain, {'User-Agent' => $ua}) do |http|
-        response = http.request_head(URI.escape(download_link.href))
+      Net::HTTP.start($domain) do |http|
+        response = http.request_head(URI.escape(download_link.href), {'User-Agent' => $ua})
         pbar = ProgressBar.create(:total => response['content-length'].to_i, :format => '%a %B %p%% %c/%C %e')
         File.open("#{filename_path}.part", 'w') do |file|
-          http.get(URI.escape(download_link.href)) do |stream|
+          http.get(URI.escape(download_link.href), {'User-Agent' => $ua}) do |stream|
             file.write stream
             counter += stream.length
             pbar.progress = counter
