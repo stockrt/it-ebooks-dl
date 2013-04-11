@@ -40,7 +40,9 @@ def process_book(id, download_counter, max_downloads, download_dir)
     format = page.parser.xpath('//td/b[@itemprop="bookFormat"]').children.to_s.downcase
     size = page.parser.xpath('//tr[8]/td[2]/b').children.to_s
 
+    # Filename filter.
     filename = "#{author} - #{title} - #{publisher} - #{date} - #{pages}p - #{lang} - ISBN #{isbn}.#{format}"
+    filename = filename.chars.select { |char| char.valid_encoding? }.join
     filename.gsub!(' ', '_')
     filename.delete!(',')
     filename.delete!('\'')
