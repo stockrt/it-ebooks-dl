@@ -48,25 +48,48 @@ def process_book(id, download_counter, max_downloads, download_dir)
     filename.chomp!
 
     filename_path = "#{download_dir}/#{filename}"
+    filename_part_path = "#{filename_path}.part"
 
     download_link = page.link_with(:id => 'dl')
 
     if File.exist?(filename_path)
       puts "- Already downloaded (#{id} / #{size}): #{filename}".light_yellow
     else
-      puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
-      #a.click(download_link).save_as(filename_path)
-      counter = 0
+      if File.exist?(filename_part_path)
+        puts "+ Resuming download (#{id} / #{size}): #{filename}".light_green
+        filename_part_size = File.stat(filename_part_path).size
+        request_headers = {'User-Agent' => $ua, 'Range' => "bytes=#{filename_part_size}-"}
+      else
+        puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
+        filename_part_size = 0
+        request_headers = {'User-Agent' => $ua}
+      end
+
+      counter = filename_part_size
+
       Net::HTTP.start($domain) do |http|
+        # No Range here, we want to know the total Content-Length.
         response = http.request_head(URI.escape(download_link.href), {'User-Agent' => $ua})
-        pbar = ProgressBar.create(:total => response['content-length'].to_i, :format => '%a %B %p%% %c/%C %e')
-        File.open("#{filename_path}.part", 'w') do |file|
-          http.get(URI.escape(download_link.href), {'User-Agent' => $ua}) do |stream|
-            file.write stream
-            counter += stream.length
-            pbar.progress = counter
+
+        pbar = ProgressBar.create(:starting_at  => filename_part_size,
+                                  :total        => response['Content-Length'].to_i,
+                                  :format       => '%a %B %p%% %c/%C %e')
+
+        File.open(filename_part_path, 'ab') do |file|
+          http.request_get(URI.escape(download_link.href), request_headers) do |response|
+            if response.code == 200
+              counter = 0
+              file.truncate(0)
+            end
+
+            response.read_body do |stream|
+              file.write stream
+              counter += stream.length
+              pbar.progress = counter
+            end
           end
         end
+
         File.rename("#{filename_path}.part", filename_path)
       end
     end
