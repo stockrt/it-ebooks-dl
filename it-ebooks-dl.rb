@@ -47,6 +47,7 @@ def process_book(id, download_counter, max_downloads, download_dir)
     agent.user_agent = ua
   end
 
+  # Book page.
   a.get("http://#{domain}/book/#{id}/") do |page|
     author = page.parser.xpath('//td/b[@itemprop="author"]').children.to_s
     title = page.parser.xpath('//h1').children.to_s
@@ -83,8 +84,8 @@ def process_book(id, download_counter, max_downloads, download_dir)
         request_headers = {'User-Agent' => ua}
       end
 
+      # Book download.
       counter = filename_part_size
-
       Net::HTTP.start(domain) do |http|
         # No Range here, we want to know the total Content-Length.
         response = http.request_head(URI.escape(download_link.href), {'User-Agent' => ua})
