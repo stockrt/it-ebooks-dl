@@ -72,7 +72,7 @@ def process_book(id, download_counter, max_downloads, download_dir)
     download_link = page.link_with(:id => 'dl')
 
     if download_link.nil?
-      puts "- Download link not found (id: #{id})".light_yellow
+      puts "- Download link not found (id: #{id})".light_red
       return
     end
 
