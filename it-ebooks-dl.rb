@@ -1,35 +1,53 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-# Requires.
+##############
+## REQUIRES ##
+##############
+
 require 'colorize'
 require 'net/http'
 require 'mechanize'
 require 'ruby-progressbar'
 
-# Usage.
-abort "#{$0} <initial_book_id> <max_downloads> <download_dir>" if ARGV.size != 3
+##########
+## MAIN ##
+##########
 
-# Defines.
-initial_book_id = ARGV[0].to_i
-max_downloads = ARGV[1].to_i
-download_dir = File.expand_path(ARGV[2])
-$domain = 'www.it-ebooks.info'
-$ua = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:19.0) Gecko/20100101 Firefox/19.0'
+def main
+  # Usage.
+  abort "#{$0} <initial_book_id> <max_downloads> <download_dir>" if ARGV.size != 3
 
-# Check.
-abort "Download dir not found: #{download_dir}" unless File.directory?(download_dir)
+  # Params.
+  initial_book_id = ARGV[0].to_i
+  max_downloads = ARGV[1].to_i
+  download_dir = File.expand_path(ARGV[2])
+
+  # Check.
+  abort "Download dir not found: #{download_dir}" unless File.directory?(download_dir)
+
+  # Loop.
+  download_counter = 1
+  while download_counter <= max_downloads do
+    process_book(initial_book_id, download_counter, max_downloads, download_dir)
+    initial_book_id += 1
+    download_counter += 1
+  end
+end
 
 # Parse and download.
 def process_book(id, download_counter, max_downloads, download_dir)
+  domain = 'www.it-ebooks.info'
+  ua = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:19.0) Gecko/20100101 Firefox/19.0'
+
   puts "* (#{download_counter}/#{max_downloads}) Processing book_id: #{id}".light_blue
 
   # Agent.
   a = Mechanize.new do |agent|
-    agent.user_agent = $ua
+    agent.user_agent = ua
   end
 
-  a.get("http://#{$domain}/book/#{id}/") do |page|
+  a.get("http://#{domain}/book/#{id}/") do |page|
     author = page.parser.xpath('//td/b[@itemprop="author"]').children.to_s
     title = page.parser.xpath('//h1').children.to_s
     publisher = page.parser.xpath('//td/b/a[@itemprop="publisher"]').children.to_s
@@ -58,18 +76,18 @@ def process_book(id, download_counter, max_downloads, download_dir)
       if File.exist?(filename_part_path)
         puts "+ Resuming download (#{id} / #{size}): #{filename}".light_green
         filename_part_size = File.stat(filename_part_path).size
-        request_headers = {'User-Agent' => $ua, 'Range' => "bytes=#{filename_part_size}-"}
+        request_headers = {'User-Agent' => ua, 'Range' => "bytes=#{filename_part_size}-"}
       else
         puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
         filename_part_size = 0
-        request_headers = {'User-Agent' => $ua}
+        request_headers = {'User-Agent' => ua}
       end
 
       counter = filename_part_size
 
-      Net::HTTP.start($domain) do |http|
+      Net::HTTP.start(domain) do |http|
         # No Range here, we want to know the total Content-Length.
-        response = http.request_head(URI.escape(download_link.href), {'User-Agent' => $ua})
+        response = http.request_head(URI.escape(download_link.href), {'User-Agent' => ua})
 
         pbar = ProgressBar.create(:starting_at  => filename_part_size,
                                   :total        => response['Content-Length'].to_i,
@@ -96,12 +114,12 @@ def process_book(id, download_counter, max_downloads, download_dir)
   end
 end
 
-# Loop.
-download_counter = 1
-while download_counter <= max_downloads do
-  process_book(initial_book_id, download_counter, max_downloads, download_dir)
-  initial_book_id += 1
-  download_counter += 1
+begin
+  main
+rescue Interrupt
+  puts
+  puts 'Exiting.'
+  exit 0
 end
 
 =begin
