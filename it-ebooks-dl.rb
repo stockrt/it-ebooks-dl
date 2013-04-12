@@ -71,15 +71,20 @@ def process_book(id, download_counter, max_downloads, download_dir)
 
     download_link = page.link_with(:id => 'dl')
 
+    if download_link.nil?
+      puts "- Download link not found (id: #{id})".light_yellow
+      return
+    end
+
     if File.exist?(filename_path)
-      puts "- Already downloaded (#{id} / #{size}): #{filename}".light_yellow
+      puts "- Already downloaded (id: #{id} / #{size}): #{filename}".light_yellow
     else
       if File.exist?(filename_part_path)
-        puts "+ Resuming download (#{id} / #{size}): #{filename}".light_green
+        puts "+ Resuming download (id: #{id} / #{size}): #{filename}".light_green
         filename_part_size = File.stat(filename_part_path).size
         request_headers = {'User-Agent' => ua, 'Range' => "bytes=#{filename_part_size}-"}
       else
-        puts "+ Downloading (#{id} / #{size}): #{filename}".light_green
+        puts "+ Downloading (id: #{id} / #{size}): #{filename}".light_green
         filename_part_size = 0
         request_headers = {'User-Agent' => ua}
       end
