@@ -56,6 +56,7 @@ def process_book(id, download_counter, max_downloads, download_dir)
       return
     end
 
+    author = page.parser.xpath('//td/b[@itemprop="author"]').children.to_s.split(',')[0..2].join(' + ')
     title = page.parser.xpath('//h1').children.to_s
     publisher = page.parser.xpath('//td/b/a[@itemprop="publisher"]').children.to_s
     date = page.parser.xpath('//td/b[@itemprop="datePublished"]').children.to_s
