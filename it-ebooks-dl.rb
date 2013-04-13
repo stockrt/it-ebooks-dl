@@ -68,8 +68,9 @@ def process_book(id, download_counter, max_downloads, download_dir)
     # Filename filter.
     filename = "#{author} - #{title} - #{publisher} - #{date} - #{pages}p - #{lang} - ISBN #{isbn}.#{format}"
     filename = filename.chars.select { |char| char.valid_encoding? }.join
-    filename.gsub!(' ', '_')
-    filename.gsub!('_+', '_')
+    filename.gsub!(/ +/, ' ')
+    filename.gsub!(/ /, '_')
+    filename.gsub!(/_+/, '_')
     filename.chomp!
 
     filename_path = "#{download_dir}/#{filename}"
