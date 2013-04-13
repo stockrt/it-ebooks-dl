@@ -49,7 +49,13 @@ def process_book(id, download_counter, max_downloads, download_dir)
 
   # Book page.
   a.get("http://#{domain}/book/#{id}/") do |page|
-    author = page.parser.xpath('//td/b[@itemprop="author"]').children.to_s
+    download_link = page.link_with(:id => 'dl')
+
+    if download_link.nil?
+      puts "- Download link not found (id: #{id})".light_red
+      return
+    end
+
     title = page.parser.xpath('//h1').children.to_s
     publisher = page.parser.xpath('//td/b/a[@itemprop="publisher"]').children.to_s
     date = page.parser.xpath('//td/b[@itemprop="datePublished"]').children.to_s
@@ -68,13 +74,6 @@ def process_book(id, download_counter, max_downloads, download_dir)
 
     filename_path = "#{download_dir}/#{filename}"
     filename_part_path = "#{filename_path}.part"
-
-    download_link = page.link_with(:id => 'dl')
-
-    if download_link.nil?
-      puts "- Download link not found (id: #{id})".light_red
-      return
-    end
 
     if File.exist?(filename_path)
       puts "- Already downloaded (id: #{id} / #{size}): #{filename}".light_yellow
