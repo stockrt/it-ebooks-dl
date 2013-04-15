@@ -61,21 +61,21 @@ def process_book(id, download_counter, max_downloads, download_dir)
       return
     end
 
-    author = valid_encode(page.parser.xpath('//td/b[@itemprop="author"]').children.to_s)
-    author = author.split(',')[0..2].join(' + ')
-    title = valid_encode(page.parser.xpath('//h1').children.to_s)
-    publisher = valid_encode(page.parser.xpath('//td/b/a[@itemprop="publisher"]').children.to_s)
-    date = valid_encode(page.parser.xpath('//td/b[@itemprop="datePublished"]').children.to_s)
-    pages = valid_encode(page.parser.xpath('//td/b[@itemprop="numberOfPages"]').children.to_s)
-    lang = valid_encode(page.parser.xpath('//td/b[@itemprop="inLanguage"]').children.to_s.downcase)
-    isbn = valid_encode(page.parser.xpath('//td/b[@itemprop="isbn"]').children.to_s)
-    format = valid_encode(page.parser.xpath('//td/b[@itemprop="bookFormat"]').children.to_s.downcase)
-    size = valid_encode(page.parser.xpath('//tr[8]/td[2]/b').children.to_s)
+    author = valid_encode(page.parser.xpath('//td/b[@itemprop="author"]').children.to_s).strip
+    author = author.split(',')[0..2].join(' + ').strip
+    title = valid_encode(page.parser.xpath('//h1').children.to_s).strip
+    publisher = valid_encode(page.parser.xpath('//td/b/a[@itemprop="publisher"]').children.to_s).strip
+    date = valid_encode(page.parser.xpath('//td/b[@itemprop="datePublished"]').children.to_s).strip
+    pages = valid_encode(page.parser.xpath('//td/b[@itemprop="numberOfPages"]').children.to_s).strip
+    lang = valid_encode(page.parser.xpath('//td/b[@itemprop="inLanguage"]').children.to_s).strip.downcase
+    isbn = valid_encode(page.parser.xpath('//td/b[@itemprop="isbn"]').children.to_s).strip
+    format = valid_encode(page.parser.xpath('//td/b[@itemprop="bookFormat"]').children.to_s).strip.downcase
+    size = valid_encode(page.parser.xpath('//tr[8]/td[2]/b').children.to_s).strip
 
     filename = "#{author} - #{title} - #{publisher} - #{date} - #{pages}p - #{lang} - ISBN #{isbn}.#{format}"
-    filename.gsub!(/ +/, ' ')
-    filename.gsub!(/ /, '_')
-    filename.gsub!(/_+/, '_')
+    filename.gsub!(/ +/, '_')
+    filename.gsub!(/\/+/, '_')
+    filename.gsub!(/(-|_| )\.#{format}/, ".#{format}")
     filename.chomp!
 
     filename_path = "#{download_dir}/#{filename}"
