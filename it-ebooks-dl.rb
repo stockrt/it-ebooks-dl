@@ -55,12 +55,16 @@ def process_book(id, download_counter, max_downloads, download_dir)
   # Book page.
   a.get("http://#{domain}/book/#{id}/") do |page|
     download_link = page.link_with(:id => 'dl')
+    if download_link.nil?
+      download_link = page.link_with(:href => /filepi/)
+    end
 
     if download_link.nil?
       puts "- Download link not found (id: #{id})".light_red
       return
     end
 
+    uri = URI(download_link.href)
     author = valid_encode(page.parser.xpath('//td/b[@itemprop="author"]').children.to_s).strip
     author = author.split(',')[0..2].join(' + ').strip
     title = valid_encode(page.parser.xpath('//h1').children.to_s).strip
@@ -87,25 +91,31 @@ def process_book(id, download_counter, max_downloads, download_dir)
       if File.exist?(filename_part_path)
         puts "+ Resuming download (id: #{id} / #{size}): #{filename}".light_green
         filename_part_size = File.stat(filename_part_path).size
-        request_headers = {'User-Agent' => ua, 'Range' => "bytes=#{filename_part_size}-"}
+        request_headers = {'User-Agent' => ua, 'Referer' => "http://#{domain}", 'Range' => "bytes=#{filename_part_size}-"}
       else
         puts "+ Downloading (id: #{id} / #{size}): #{filename}".light_green
         filename_part_size = 0
-        request_headers = {'User-Agent' => ua}
+        request_headers = {'User-Agent' => ua, 'Referer' => "http://#{domain}"}
       end
 
       # Book download.
       counter = filename_part_size
-      Net::HTTP.start(domain) do |http|
+      if uri.host.nil?
+        download_domain = domain
+      else
+        download_domain = uri.host
+      end
+
+      Net::HTTP.start(download_domain) do |http|
         # No Range here, we want to know the total Content-Length.
-        response = http.request_head(URI.escape(download_link.href), {'User-Agent' => ua})
+        response = http.request_head(uri.to_s, {'User-Agent' => ua, 'Referer' => "http://#{domain}"})
 
         pbar = ProgressBar.create(:starting_at  => filename_part_size,
                                   :total        => response['Content-Length'].to_i,
                                   :format       => '%a %B %p%% %c/%C %e')
 
         File.open(filename_part_path, 'ab') do |file|
-          http.request_get(URI.escape(download_link.href), request_headers) do |response|
+          http.request_get(uri.to_s, request_headers) do |response|
             if response.code == 200
               counter = 0
               file.truncate(0)
