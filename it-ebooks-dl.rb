@@ -36,8 +36,8 @@ def main
 end
 
 def valid_encode(str)
-    return str if str.nil?
-    return str.chars.select { |char| char.valid_encoding? }.join
+  return str if str.nil?
+  return str.chars.select { |char| char.valid_encoding? }.join
 end
 
 # Parse and download.
