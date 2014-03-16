@@ -142,17 +142,3 @@ rescue Interrupt
   puts 'Exiting.'
   exit 0
 end
-
-=begin
-<tr><td width="150">Publisher:</td><td><b><a href="/publisher/3/" title="O'Reilly Media eBooks" itemprop="publisher">O'Reilly Media</a></b></td></tr>
-<tr><td>By:</td><td><b itemprop="author" style="display:none;">Cricket Liu</b><b><a href='/author/327/' title='Cricket Liu'>Cricket Liu</a></b></td></tr>
-<tr><td>ISBN:</td><td><b itemprop="isbn">978-1-4493-0519-2</b></td></tr>
-<tr><td>Year:</td><td><b itemprop="datePublished">2011</b></td></tr>
-<tr><td>Pages:</td><td><b itemprop="numberOfPages">52</b></td></tr>
-<tr><td>Language:</td><td><b itemprop="inLanguage">English</b></td></tr>
-<tr><td>File size:</td><td><b>0.7 MB</b></td></tr>
-<tr><td>File format:</td><td><b itemprop="bookFormat">PDF</b></td></tr>
-<tr><td colspan="2"><h4>eBook</h4></td></tr>
-<tr><td>Download:</td><td>
-<a id="dl" href="/go.php?id=433-1365152009-ccad9a79ffff872d665d5e3b27c9e9ce" rel="nofollow">Free</a>    <script>$("#dl").text("DNS and BIND on IPv6")</script>
-=end
